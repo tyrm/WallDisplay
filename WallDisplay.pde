@@ -21,6 +21,7 @@ int weatherTemperature;
   
 void setup() {
   size(800,480);
+  //fullScreen();
   noStroke();
 
   // Load Config
@@ -28,9 +29,6 @@ void setup() {
   session = new TembooSession(config.getString("tembooUsername"), config.getString("tembooApplication"), config.getString("tembooKey"));
   weatherUpdateStats();
 
-  if (config.getBoolean("fullscreen")) {
-    fullScreen();
-  }
   if (config.getBoolean("hideCursor")) {
     noCursor();
   }
