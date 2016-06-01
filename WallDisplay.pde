@@ -8,6 +8,8 @@ JSONObject config;
 TembooSession session;
 
 ControlP5 cp5;
+Textlabel labelClock;
+
 PImage backgroundImg;
 
 final String weatherWOEID = "12797181";
@@ -66,18 +68,25 @@ void setup() {
      .getCaptionLabel().align(CENTER,CENTER)
      ;
 
-  cp5.addTextlabel("label")
-     .setText("A single ControlP5 textlabel, in yellow.")
-     .setFont(loadFont("UASquared-26.vlw"))
-     .setPosition(100,50)
-     ;
+  labelClock = cp5.addTextlabel("clock")
+                  .setText("00:00")
+                  .setFont(loadFont("UASquared-150.vlw"))
+                  .setPosition(0,360)
+                  ;
 
   // 
 }
 
 void draw() {
   background(backgroundImg);
+  
+  labelClock.setText(hour()+":"+minute());
+}
 
+void controlEvent(ControlEvent theControlEvent) {
+  if (theControlEvent.isTab()) {
+    println("got an event from tab : "+theControlEvent.getTab().getName()+" with id "+theControlEvent.getTab().getId());
+  }
 }
 
 void weatherUpdateStats() {
