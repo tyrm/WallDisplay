@@ -22,24 +22,31 @@ int weatherTemperature;
 void setup() {
   size(800,480);
   noStroke();
-  
+
   // Load Config
   config = loadJSONObject("config.json");
   session = new TembooSession(config.getString("tembooUsername"), config.getString("tembooApplication"), config.getString("tembooKey"));
   weatherUpdateStats();
-  
+
+  if (config.getBoolean("fullscreen")) {
+    fullScreen();
+  }
+  if (config.getBoolean("hideCursor")) {
+    noCursor();
+  }
+
   // Load images
   backgroundImg = loadImage("bkg_firecherry.jpg");
-  
+
   // Build UI
   cp5 = new ControlP5(this);
-  
+
   // Create Tabs
   cp5.addTab("lights");
-     
+
   // if you want to receive a controlEvent when
   // a  tab is clicked, use activeEvent(true)
-  
+
   cp5.getTab("default")
      .setColorBackground(0x7F001F3F)
      .setColorActive(0x7F39CCCC)
@@ -60,13 +67,13 @@ void setup() {
      .setId(2)
      .getCaptionLabel().align(CENTER,CENTER)
      ;
-     
+
   cp5.addTextlabel("label")
      .setText("A single ControlP5 textlabel, in yellow.")
      .setFont(loadFont("UASquared-26.vlw"))
      .setPosition(100,50)
      ;
-  
+
   // 
 }
 
@@ -84,7 +91,7 @@ void weatherUpdateStats() {
 
   // Run the Choreo and store the results
   GetWeatherResultSet getWeatherResults = getWeatherChoreo.run();
-  
+
   // Update display variables
   weatherConditionCode = int(getWeatherResults.getConditionCode());
   weatherConditionText = getWeatherResults.getConditionText();
