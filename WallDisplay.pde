@@ -1,25 +1,17 @@
 import controlP5.*;
-import com.temboo.core.*;
-import com.temboo.Library.Yahoo.Weather.*;
 
-JSONObject config;
+boolean useOnlineData = false;
 
-// Create a session using your Temboo account application details
-TembooSession session;
+JSONObject config; // Configuration Values
 
 ControlP5 cp5;
 Textlabel labelClock;
+Textlabel labelWeatherIcon;
+Textlabel labelWeatherHigh;
+Textlabel labelWeatherLow;
+Textlabel labelWeatherTemperature;
 
 PImage backgroundImg;
-
-final String weatherWOEID = "12797181";
-int weatherConditionCode;
-String weatherConditionText;
-int weatherForecastCode;
-String weatherForecastText;
-int weatherHigh;
-int weatherLow;
-int weatherTemperature;
   
 void setup() {
   size(800,480);
@@ -28,11 +20,13 @@ void setup() {
 
   // Load Config
   config = loadJSONObject("config.json");
-  session = new TembooSession(config.getString("tembooUsername"), config.getString("tembooApplication"), config.getString("tembooKey"));
-  weatherUpdateStats();
-
+  
   if (config.getBoolean("hideCursor")) {
     noCursor();
+  }
+  
+  if (!config.isNull("useOnlineData")) {
+    useOnlineData = config.getBoolean("useOnlineData");
   }
 
   // Load images
@@ -71,16 +65,46 @@ void setup() {
   labelClock = cp5.addTextlabel("clock")
                   .setText("00:00")
                   .setFont(loadFont("UASquared-150.vlw"))
-                  .setPosition(0,360)
+                  .setColorValue(0xbfffffff)
+                  .setPosition(0,320)
                   ;
+  
+  // Weather Display
+  labelWeatherIcon = cp5.addTextlabel("weatherIcon")
+                        .setText(str(char(0xf07d)))
+                        .setFont(loadFont("WeatherIcons-Regular-200.vlw"))
+                        .setColorValue(0xbfffffff)
+                        .setPosition(350,220)
+                        ;
 
-  // 
+  labelWeatherHigh = cp5.addTextlabel("weatherHigh")
+                        .setText(str(100) + "*")
+                        .setFont(loadFont("UASquared-50.vlw"))
+                        .setColorValue(0xbfffdddd)
+                        .setPosition(690,400)
+                        ;
+  
+  labelWeatherLow = cp5.addTextlabel("weatherLocal")
+                       .setText(str(100) + "*")
+                       .setFont(loadFont("UASquared-50.vlw"))
+                       .setColorValue(0xbfddddff)
+                       .setPosition(590,400)
+                       ;
+  
+  labelWeatherTemperature = cp5.addTextlabel("weatherTemperature")
+                               .setText(str(100) + "*")
+                               .setFont(loadFont("UASquared-100.vlw"))
+                               .setColorValue(0xbfffffff)
+                               .setPosition(600,300)
+                               ;
+  
+  weatherUpdateStats();
 }
 
 void draw() {
   background(backgroundImg);
   
-  labelClock.setText(hour()+":"+minute());
+  labelClock.setText(pad(hour(),2)+":"+pad(minute(),2));
 }
 
 void controlEvent(ControlEvent theControlEvent) {
@@ -90,21 +114,52 @@ void controlEvent(ControlEvent theControlEvent) {
 }
 
 void weatherUpdateStats() {
-  // Create the Choreo object using your Temboo session
-  GetWeather getWeatherChoreo = new GetWeather(session);
+  String url;
+  if (useOnlineData) {
+    url = "https://api.wunderground.com/api/" +
+    config.getString("wundergroundKey") +
+    "/conditions/forecast/q/" +
+    config.getString("wundergroundLocation") +
+    ".json";
+  }
+  else {
+    url = "test.json";
+  }
+  JSONObject response = loadJSONObject(url);
+  JSONObject theWeather = response.getJSONObject("current_observation");
+  JSONObject theForecast = response.getJSONObject("forecast").getJSONObject("simpleforecast").getJSONArray("forecastday").getJSONObject(0);
+  
+  
+  println(theWeather.getString("observation_time"));
+  
+  labelWeatherTemperature.setText(str(theWeather.getFloat("temp_f")));
+  
+  String high = theForecast.getJSONObject("high").getString("fahrenheit");
+  labelWeatherHigh.setText(high);
+  if (high.length() > 2) {
+    labelWeatherHigh.setPosition(690,400);
+  }
+  else {
+    labelWeatherHigh.setPosition(710,400);
+  }
+  
+  String low = theForecast.getJSONObject("low").getString("fahrenheit");
+  labelWeatherLow.setText(low);
+  if (low.length() > 2) {
+    labelWeatherLow.setPosition(590,400);
+  }
+  else {
+    labelWeatherLow.setPosition(610,400);
+  }
+  labelWeatherLow.setText(theForecast.getJSONObject("low").getString("fahrenheit"));
+}
 
-  // Set inputs
-  getWeatherChoreo.setWOEID(weatherWOEID);
-
-  // Run the Choreo and store the results
-  GetWeatherResultSet getWeatherResults = getWeatherChoreo.run();
-
-  // Update display variables
-  weatherConditionCode = int(getWeatherResults.getConditionCode());
-  weatherConditionText = getWeatherResults.getConditionText();
-  weatherForecastCode  = int(getWeatherResults.getForecastCode());
-  weatherForecastText  = getWeatherResults.getForecastText();
-  weatherHigh          = int(getWeatherResults.getHigh());
-  weatherLow           = int(getWeatherResults.getLow());
-  weatherTemperature   = int(getWeatherResults.getTemperature());
+String pad(int n, int l) {
+  String num_str = str(n);
+  
+  for (int i = num_str.length() ; i < l; i = i+1) {
+    num_str = "0" + num_str;
+  }
+  
+  return num_str;
 }
