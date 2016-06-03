@@ -1,8 +1,11 @@
 import controlP5.*;
+import java.util.concurrent.TimeUnit;
+import org.dishevelled.processing.executor.Executor;
 
 boolean useOnlineData = false;
 
 JSONObject config; // Configuration Values
+Executor executor; // Timer
 
 ControlP5 cp5;
 Textlabel labelClock;
@@ -97,8 +100,8 @@ void setup() {
                                .setColorValue(0xbfffffff)
                                .setPosition(600,300)
                                ;
-  
-  weatherUpdateStats();
+  int refreshRate = config.getInt("wundergroundRefreshMinutes") * 60 * 1000;
+  executor.repeat("weatherUpdateStats", refreshRate);
 }
 
 void draw() {
