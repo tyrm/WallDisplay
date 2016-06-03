@@ -80,14 +80,14 @@ void setup() {
   labelWeatherHigh = cp5.addTextlabel("weatherHigh")
                         .setText(str(100) + "*")
                         .setFont(loadFont("UASquared-50.vlw"))
-                        .setColorValue(0xbfffdddd)
+                        .setColorValue(0xbfffaaaa)
                         .setPosition(690,400)
                         ;
   
   labelWeatherLow = cp5.addTextlabel("weatherLocal")
                        .setText(str(100) + "*")
                        .setFont(loadFont("UASquared-50.vlw"))
-                       .setColorValue(0xbfddddff)
+                       .setColorValue(0xbfaaaaff)
                        .setPosition(590,400)
                        ;
   
@@ -132,8 +132,10 @@ void weatherUpdateStats() {
   
   println(theWeather.getString("observation_time"));
   
+  // Set Outside Temp
   labelWeatherTemperature.setText(str(theWeather.getFloat("temp_f")));
   
+  // Set High Temp
   String high = theForecast.getJSONObject("high").getString("fahrenheit");
   labelWeatherHigh.setText(high);
   if (high.length() > 2) {
@@ -143,6 +145,7 @@ void weatherUpdateStats() {
     labelWeatherHigh.setPosition(710,400);
   }
   
+  // Set Low Temp
   String low = theForecast.getJSONObject("low").getString("fahrenheit");
   labelWeatherLow.setText(low);
   if (low.length() > 2) {
@@ -152,6 +155,155 @@ void weatherUpdateStats() {
     labelWeatherLow.setPosition(610,400);
   }
   labelWeatherLow.setText(theForecast.getJSONObject("low").getString("fahrenheit"));
+  
+  // Set Weather Icon
+  String iconString = theForecast.getString("icon");
+  switch(iconString) {
+    case "chanceflurries":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf0b2)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf0b4)));
+      }
+      break;
+    case "chancerain":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf008)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf028)));
+      }
+      break;
+    case "chancesleet":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf0b2)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf0b4)));
+      }
+      break;
+    case "chancesnow":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf00a)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf02a)));
+      }
+      break;
+    case "chancetstorms":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf010)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf02d)));
+      }
+      break;
+    case "clear":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf00d)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf077)));
+      }
+      break;
+    case "cloudy":
+      labelWeatherIcon.setText(str(char(0xf013)));
+      break;
+    case "flurries":
+      labelWeatherIcon.setText(str(char(0xf064)));
+      break;
+    case "fog":
+      labelWeatherIcon.setText(str(char(0xf014)));
+      break;
+    case "hazy":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf0b6)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf063)));
+      }
+      break;
+    case "mostlycloudy":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf002)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf086)));
+      }
+      break;
+    case "partlycloudy":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf07d)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf07e)));
+      }
+      break;
+    case "partlysunny":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf002)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf086)));
+      }
+      break;
+    case "mostlysunny":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf07d)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf07e)));
+      }
+      break;
+    case "sleet":
+      labelWeatherIcon.setText(str(char(0xf0b5)));
+      break;
+    case "rain":
+      labelWeatherIcon.setText(str(char(0xf019)));
+      break;
+    case "snow":
+      labelWeatherIcon.setText(str(char(0xf01b)));
+      break;
+    case "sunny":
+      if (hour() < 18) {
+        // Day
+        labelWeatherIcon.setText(str(char(0xf00d)));
+      }
+      else {
+        // Night
+        labelWeatherIcon.setText(str(char(0xf02e)));
+      }
+      break;
+    case "tstorms":
+      labelWeatherIcon.setText(str(char(0xf01e)));
+      break;
+    case "unknown":
+      labelWeatherIcon.setText(str(char(0xf03e)));
+      break;
+  }
 }
 
 String pad(int n, int l) {
