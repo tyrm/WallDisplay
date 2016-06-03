@@ -100,8 +100,9 @@ void setup() {
                                .setColorValue(0xbfffffff)
                                .setPosition(600,300)
                                ;
-  int refreshRate = config.getInt("wundergroundRefreshMinutes") * 60 * 1000;
-  executor.repeat("weatherUpdateStats", refreshRate);
+  
+  executor = new Executor(this, 4);
+  executor.repeat("weatherUpdateStats", 0, config.getInt("wundergroundRefreshMinutes"), TimeUnit.MINUTES);
 }
 
 void draw() {
