@@ -118,20 +118,11 @@ void controlEvent(ControlEvent theControlEvent) {
 }
 
 void weatherUpdateStats() {
-  String url;
-  if (useOnlineData) {
-    url = "https://api.wunderground.com/api/" +
-    config.getString("wundergroundKey") +
-    "/conditions/forecast/q/" +
-    config.getString("wundergroundLocation") +
-    ".json";
-  }
-  else {
-    url = "test.json";
-  }
-  JSONObject response = loadJSONObject(url);
-  JSONObject theWeather = response.getJSONObject("current_observation");
-  JSONObject theForecast = response.getJSONObject("forecast").getJSONObject("simpleforecast").getJSONArray("forecastday").getJSONObject(0);
+  JSONObject theWeather = loadJSONObject("https://pup.haus/vesta/api/weather/current_observation");
+  
+  
+  JSONObject forecast = loadJSONObject("https://pup.haus/vesta/api/weather/forecast");
+  JSONObject theForecast = forecast.getJSONObject("simpleforecast").getJSONArray("forecastday").getJSONObject(0);
   
   
   println(theWeather.getString("observation_time"));
